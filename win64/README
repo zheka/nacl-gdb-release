@@ -1,0 +1,165 @@
+Getting started with win64 nacl64-gdb
+-------------------------------------
+
+
+Download and unpack this archive
+--------------------------------
+
+Oh, I guess you did that already... Let's refer to the unpacked folder as GDB.
+So the file you are reading now is
+
+  GDB\win64\README
+
+
+Prepare the browser
+-------------------
+
+This step is only necessary until the debugging related changes in NaCl runtime
+sneak into production version of Chrome.
+
+We recommend you do not screw up your main Google Chrome installation. Instead,
+download and unpack a zip archive of a recent Chromium build from
+
+  http://commondatastorage.googleapis.com/chromium-browser-continuous/index.html
+
+For example, try this one
+
+  http://commondatastorage.googleapis.com/chromium-browser-continuous/Win/120000/chrome-win32.zip
+
+Let's refer the browser folder as CHROME.
+
+Now replace
+
+  CHROME\nacl64.exe
+
+with
+
+  GDB\win64\nacl64.exe
+
+Run the browser
+
+  CHROME\chrome.exe
+
+Navigate to
+
+  about:flags
+
+and enable Native Client. Relaunch the browser. This is needed for running
+Native Client applications served locally.
+
+
+Try the examples
+----------------
+
+Go to
+
+  GDB\examples
+
+and start a server to serve the files. The easy way is to use standard Python
+module:
+
+  python -m SimpleHTTPServer
+
+to use port 8000 or
+
+  python -m SimpleHTTPServer PORT
+
+to use another port.
+
+Launch you browser. Navigate to
+
+  localhost:PORT
+
+Try the links to particular examples, check they work.
+
+
+Run the example of interest
+---------------------------
+
+For simplicity, let's focus on a particular example
+
+  GDB\examples\hello_world_c
+
+Launch your browser. Navigate to
+
+  localhost:PORT
+
+and click a link to
+
+  Hello, World! (C)
+
+Check the example runs OK.
+
+
+Run nacl64-gdb
+--------------
+
+For even more simplicity, let's make the example directory our working
+directory. Go to
+
+  GDB\examples\hello_world_c
+
+and run the debugger
+
+  GDB\win64\nacl64-gdb.exe
+
+Now tell the debugger which Native Client binaries to debug. First, let it know
+about the IRT:
+
+  (gdb) nacl-irt CHROME\nacl_irt_x86_64.nexe
+
+Next, let it know about the application using its manifest file:
+
+  (gdb) nacl-manifest GDB\examples\hello_world_c\hello_world_dbg.nmf
+
+
+Attach to the NaCl loader process
+---------------------------------
+
+This is the tricky part.
+
+One option is to use WinDBG. You can install it from
+
+  http://msdn.microsoft.com/en-us/windows/hardware/gg463009
+
+Run WinDBG. Go to
+
+  File -> Attach to a process
+
+Select sort order "By Executable". Search the list for nacl64.exe - you will
+find 2 of them. Unfold to check the command lines, pick one that contains
+"nacl-loader" argument.
+
+Another option is to use Process Explorer. You can get it from
+
+  http://technet.microsoft.com/en-us/sysinternals/bb896653
+
+Run it, examine the process tree. Find nacl64.exe launched by nacl64.exe
+launched by chrome.
+
+Ok, now you know the PID. In nacl64-gdb, attach
+
+  (gdb) attach PID
+
+
+Try the debugging
+-----------------
+
+Set the breakpoint
+
+  (gdb) b FortyTwo
+  (gdb) c
+
+In the browser, in our "Hello, World! (C)" example window, press
+"call fortyTwo()" button. Execution should now stop in the debugger.
+
+Continue at will. Try checking the source, the backtrace, etc.
+
+  (gdb) li
+  (gdb) bt
+
+Happy debugging!
+
+
+Report bugs!
+------------
