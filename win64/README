@@ -73,8 +73,8 @@ Launch you browser. Navigate to
 Try the links to particular examples, check they work.
 
 
-Run the example of interest
----------------------------
+Run "Hello, World! (C)" example
+-------------------------------
 
 For simplicity, let's focus on a particular example
 
@@ -113,12 +113,16 @@ Next, let it know about the application using its manifest file:
   (gdb) nacl-manifest GDB\examples\hello_world_c\hello_world_dbg.nmf
 
 
-Attach to the NaCl loader process
+Attach nacl64-gdb to NaCl process
 ---------------------------------
 
-This is the tricky part.
+The easiest option is to point another tab in your browser to
 
-One option is to use WinDBG. You can install it from
+  about:memory
+
+and notice the pid of "Native Client module" process.
+
+Another option is to use WinDBG. You can install it from
 
   http://msdn.microsoft.com/en-us/windows/hardware/gg463009
 
@@ -130,7 +134,7 @@ Select sort order "By Executable". Search the list for nacl64.exe - you will
 find 2 of them. Unfold to check the command lines, pick one that contains
 "nacl-loader" argument.
 
-Another option is to use Process Explorer. You can get it from
+Yet another option is to use Process Explorer. You can get it from
 
   http://technet.microsoft.com/en-us/sysinternals/bb896653
 
@@ -142,10 +146,10 @@ Ok, now you know the PID. In nacl64-gdb, attach
   (gdb) attach PID
 
 
-Try the debugging
------------------
+Try debugging "Hello, World! (C)"
+---------------------------------
 
-Set the breakpoint
+Set the breakpoint and continue
 
   (gdb) b FortyTwo
   (gdb) c
@@ -157,6 +161,22 @@ Continue at will. Try checking the source, the backtrace, etc.
 
   (gdb) li
   (gdb) bt
+
+
+Try "Interactive Cube (C++)" example
+------------------------------------
+
+The "Interactive Cube (C++)" is much more complex than "Hello, World! (C)".
+You'll be able to try more interesting debugging commands, for example, to
+examine local variables.
+
+"Interactive Cube (C++)" sources and binaries reside in
+
+  GDB\examples\tumbler
+
+Breakpoint to begin with might be
+
+  (gdb) b tumbler::Tumbler::DrawSelf
 
 Happy debugging!
 
