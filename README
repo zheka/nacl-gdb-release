@@ -1,0 +1,184 @@
+Getting Started with x86-64 NaCl GDB
+------------------------------------
+
+Check updates of this document online at
+http://www.chromium.org/nativeclient/how-tos/debugging-documentation/getting-started-with-x86-64-nacl-gdb
+
+Introduction
+------------
+
+The alpha version of nacl64-gdb – a debugger based on gdb – allows you to debug
+statically linked as well as dynamically linked Native Client applications
+running in Chrome. Currently, only 64-bit Windows and 64-bit Linux are
+supported.
+
+Get the Debugger
+----------------
+
+You can download a binary package that contains the debugger itself together
+with few sample NaCl applications to try. Alternatively, you can build the
+debugger from source.
+
+(Windows) Get the Debugger
+--------------------------
+
+Download and unpack
+http://gsdview.appspot.com/nativeclient-archive2/gdb/latest/nacl64-gdb-win64.zip
+
+(Linux) Get the Debugger
+------------------------
+
+Download and unpack
+http://gsdview.appspot.com/nativeclient-archive2/gdb/latest/nacl64-gdb-linux64.zip
+
+Build from Source
+-----------------
+
+Download and unpack
+http://gsdview.appspot.com/nativeclient-archive2/gdb/latest/nacl64-gdb-src.zip
+
+Coming soon: Guide to compiling nac64-gdb.
+
+Prepare Your Chrome
+-------------------
+
+(Windows) Get Chrome
+--------------------
+
+On Windows, this debugging method is supported only in very recent versions of
+Chrome. Check that your version is 19.0.1045 or newer (in dev channel as of
+Feb 29, 2012).
+
+If your Chrome version is older and you don't want to upgrade, we suggest
+debugging using a recent build of Chromium from
+http://gsdview.appspot.com/chromium-browser-continuous/
+
+Try revision 122720 or higher:
+http://gsdview.appspot.com/chromium-browser-continuous/Win/122720/chrome-win32.zip
+
+(Linux) Get Chrome
+------------------
+
+ATTENTION! Unfortunately, Linux build of Google Chrome does not include symbol
+information, which is required for debugging, so you can't debug within your
+Google Chrome.
+
+Instead, debug using a recent build of Chromium from
+http://gsdview.appspot.com/chromium-browser-continuous/
+
+Try revision 122720 or higher:
+http://gsdview.appspot.com/chromium-browser-continuous/Linux_x64/122720/chrome-linux.zip
+
+Configure Chrome
+----------------
+
+To run NaCl applications not installed from Chrome Web Store, you have to enable
+Native Client for all web pages in Chrome. Navigate to about:flags, find
+"Native Client", and click Enable – then scroll to bottom and click
+"Relaunch Now".
+
+When the app is stopped in the debugger, Chrome might consider the page is
+hanging. You can use command line flag --disable-hang-monitor to prevent Chrome
+asking to kill what it thinks is hanging.
+
+Try the Examples
+----------------
+
+Let's refer to the folder you've got after unpacking the debugger as GDB.
+
+Change directory to
+GDB\examples
+
+Here you have a number of NaCl examples to try the debugger on. Start an http
+server to serve the files from this directory. For example, if you have Python
+installed, you can use it for this task by running
+python -m SimpleHTTPServer
+to serve on port 8000 or
+python -m SimpleHTTPServer PORT
+to serve on PORT.
+
+Now launch Chrome, and navigate to http://localhost:8000. Try the links to the
+individual examples, check they all work.
+
+Run "Hello, World! (C)" Example
+-------------------------------
+
+For simplicity, let's focus on a particular example
+GDB\examples\hello_world_c
+
+Navigate your browser to http://localhost:8000 and click a link to
+"Hello, World! (C)".
+
+Run the Debugger
+----------------
+
+For even more simplicity, let's make the directory that contains the example our
+working directory. Change directory to
+GDB\examples\hello_world_c
+
+Now run the debugger and specify NaCl binaries to debug.
+
+(Windows) Run the Debugger
+--------------------------
+
+GDB/win64/nacl64-gdb.exe
+
+(Linux) Run the Debugger
+------------------------
+
+GDB\linux64\nacl64-gdb
+
+Specify NaCl Binaries to Debug
+------------------------------
+
+At the debugger command prompt, specify full paths to your local NaCl binaries.
+
+First, tell the debugger about where to find the NaCl Integrated Runtime (IRT).
+It should be located in the directory where your Chrome executable is, or in a
+sub-directory named after the Chrome version. If your Chrome is installed in a
+directory named CHROME, issue
+(gdb) nacl-irt CHROME\nacl_irt_x86_64.nexe
+
+Next, tell the debugger about the NaCl application itself. Do this by telling
+the debugger where the corresponding manifest file is
+(gdb) nacl-manifest GDB\examples\hello_world_c\hello_world_dbg.nmf
+
+Attach the Debugger
+-------------------
+
+Navigate your Chrome to about:memory. Find the "Native Client module" process
+and notice its PID (process id).
+
+Now tell the debugger to attach
+(gdb) attach PID
+
+Try Debugging "Hello, World! (C)" Example
+-----------------------------------------
+
+Set the breakpoint and continue
+(gdb) b FortyTwo
+(gdb) c
+
+In the browser, in our "Hello, World! (C)" example window, press
+"call fortyTwo()" button. Execution should now stop in the debugger.
+
+Continue at will. Try checking the source, the backtrace, etc.
+(gdb) li
+(gdb) bt
+
+See the official gdb documentation for more information on using gdb.
+
+Try Debugging "Interactive Cube (C++)" Example
+----------------------------------------------
+
+The "Interactive Cube (C++)" is much more complex than "Hello, World! (C)".
+You'll be able to try more interesting debugging commands, for example, to
+examine local variables.
+
+"Interactive Cube (C++)" sources and binaries reside in
+GDB\examples\tumbler
+
+Breakpoint to begin with might be
+(gdb) b tumbler::Tumbler::DrawSelf
+
+Happy debugging!
